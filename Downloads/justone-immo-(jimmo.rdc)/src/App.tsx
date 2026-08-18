@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { UserRole, Language, Property, Tenant, Lease, PaymentTransaction, MaintenanceTicket } from "./types";
 import { INITIAL_PROPERTIES, INITIAL_TENANTS, INITIAL_LEASES, INITIAL_TRANSACTIONS, INITIAL_PROVIDERS, INITIAL_TICKETS } from "./data/mockData";
 import { DEFAULT_BCC_EXCHANGE_RATE } from "./services/currency";
@@ -13,18 +13,18 @@ import { TenantManagementModule } from "./components/TenantManagementModule";
 import { FinancesModule } from "./components/FinancesModule";
 import { MaintenanceModule } from "./components/MaintenanceModule";
 import { MarketplaceSearch } from "./components/MarketplaceSearch";
-import { LeaseGeneratorModal } from "./components/LeaseGeneratorModal";
-import { MarketEstimatorModal } from "./components/MarketEstimatorModal";
-import { KaziAiAssistantModal } from "./components/KaziAiAssistantModal";
-import { MobileMoneyModal } from "./components/MobileMoneyModal";
+const LeaseGeneratorModal = React.lazy(() => import("./components/LeaseGeneratorModal").then(m => ({ default: m.LeaseGeneratorModal })));
+const MarketEstimatorModal = React.lazy(() => import("./components/MarketEstimatorModal").then(m => ({ default: m.MarketEstimatorModal })));
+const KaziAiAssistantModal = React.lazy(() => import("./components/KaziAiAssistantModal").then(m => ({ default: m.KaziAiAssistantModal })));
+const MobileMoneyModal = React.lazy(() => import("./components/MobileMoneyModal").then(m => ({ default: m.MobileMoneyModal })));
 import { BccRateModal } from "./components/BccRateModal";
 import { CalculateurDirectRDC } from "./components/CalculateurDirectRDC";
-import { InscriptionModal } from "./components/InscriptionModal";
-import { ModalitesInscriptionModal } from "./components/ModalitesInscriptionModal";
-import { EspacePublicitaireModal } from "./components/EspacePublicitaireModal";
-import { TarificationModal } from "./components/TarificationModal";
+const InscriptionModal = React.lazy(() => import("./components/InscriptionModal").then(m => ({ default: m.InscriptionModal })));
+const ModalitesInscriptionModal = React.lazy(() => import("./components/ModalitesInscriptionModal").then(m => ({ default: m.ModalitesInscriptionModal })));
+const EspacePublicitaireModal = React.lazy(() => import("./components/EspacePublicitaireModal").then(m => ({ default: m.EspacePublicitaireModal })));
+const TarificationModal = React.lazy(() => import("./components/TarificationModal").then(m => ({ default: m.TarificationModal })));
 import { GestionDistanceDiaspora } from "./components/GestionDistanceDiaspora";
-import { FuturInnovationsModal } from "./components/FuturInnovationsModal";
+const FuturInnovationsModal = React.lazy(() => import("./components/FuturInnovationsModal").then(m => ({ default: m.FuturInnovationsModal })));
 import { JimmoLogo } from "./components/JimmoLogo";
 import { 
   Building2, 
@@ -539,81 +539,85 @@ export default function App() {
         isRefreshing={isBccRefreshing}
       />
 
-      <InscriptionModal
-        isOpen={isRegisterOpen}
-        onClose={() => setIsRegisterOpen(false)}
-        bccRate={bccRate}
-        onSuccessRegister={() => {}}
-        onOpenModalites={() => {
-          setIsRegisterOpen(false);
-          setIsModalitesOpen(true);
-        }}
-      />
+      <Suspense fallback={null}>
+        <InscriptionModal
+          isOpen={isRegisterOpen}
+          onClose={() => setIsRegisterOpen(false)}
+          bccRate={bccRate}
+          onSuccessRegister={() => {}}
+          onOpenModalites={() => {
+            setIsRegisterOpen(false);
+            setIsModalitesOpen(true);
+          }}
+        />
 
-      <ModalitesInscriptionModal
-        isOpen={isModalitesOpen}
-        onClose={() => setIsModalitesOpen(false)}
-        onOpenRegister={() => {
-          setIsModalitesOpen(false);
-          setIsRegisterOpen(true);
-        }}
-      />
+        <ModalitesInscriptionModal
+          isOpen={isModalitesOpen}
+          onClose={() => setIsModalitesOpen(false)}
+          onOpenRegister={() => {
+            setIsModalitesOpen(false);
+            setIsRegisterOpen(true);
+          }}
+        />
 
-      <EspacePublicitaireModal
-        isOpen={isAdsOpen}
-        onClose={() => setIsAdsOpen(false)}
-        bccRate={bccRate}
-      />
+        <EspacePublicitaireModal
+          isOpen={isAdsOpen}
+          onClose={() => setIsAdsOpen(false)}
+          bccRate={bccRate}
+        />
 
-      <TarificationModal
-        isOpen={isPricingOpen}
-        onClose={() => setIsPricingOpen(false)}
-        bccRate={bccRate}
-        onSelectPlan={() => {
-          setIsRegisterOpen(true);
-        }}
-      />
+        <TarificationModal
+          isOpen={isPricingOpen}
+          onClose={() => setIsPricingOpen(false)}
+          bccRate={bccRate}
+          onSelectPlan={() => {
+            setIsRegisterOpen(true);
+          }}
+        />
 
-      <FuturInnovationsModal
-        isOpen={isFutureOpen}
-        onClose={() => setIsFutureOpen(false)}
-      />
+        <FuturInnovationsModal
+          isOpen={isFutureOpen}
+          onClose={() => setIsFutureOpen(false)}
+        />
+      </Suspense>
 
-      <LeaseGeneratorModal
-        isOpen={isLeaseGenOpen}
-        onClose={() => setIsLeaseGenOpen(false)}
-        properties={properties}
-        tenants={tenants}
-        bccRate={bccRate}
-        initialProperty={leaseGenProp}
-        initialTenant={leaseGenTenant}
-        onSaveLease={handleSaveLease}
-      />
+      <Suspense fallback={null}>
+        <LeaseGeneratorModal
+          isOpen={isLeaseGenOpen}
+          onClose={() => setIsLeaseGenOpen(false)}
+          properties={properties}
+          tenants={tenants}
+          bccRate={bccRate}
+          initialProperty={leaseGenProp}
+          initialTenant={leaseGenTenant}
+          onSaveLease={handleSaveLease}
+        />
 
-      <MarketEstimatorModal
-        isOpen={isMarketEstimatorOpen}
-        onClose={() => setIsMarketEstimatorOpen(false)}
-        bccRate={bccRate}
-        primaryCurrency={primaryCurrency}
-        currentLanguage={currentLanguage}
-      />
+        <MarketEstimatorModal
+          isOpen={isMarketEstimatorOpen}
+          onClose={() => setIsMarketEstimatorOpen(false)}
+          bccRate={bccRate}
+          primaryCurrency={primaryCurrency}
+          currentLanguage={currentLanguage}
+        />
 
-      <KaziAiAssistantModal
-        isOpen={isKaziAiOpen}
-        onClose={() => setIsKaziAiOpen(false)}
-        currentLanguage={currentLanguage}
-        bccRate={bccRate}
-      />
+        <KaziAiAssistantModal
+          isOpen={isKaziAiOpen}
+          onClose={() => setIsKaziAiOpen(false)}
+          currentLanguage={currentLanguage}
+          bccRate={bccRate}
+        />
 
-      <MobileMoneyModal
-        isOpen={isMobileMoneyOpen}
-        onClose={() => setIsMobileMoneyOpen(false)}
-        property={selectedPropForPayment}
-        bccRate={bccRate}
-        primaryCurrency={primaryCurrency}
-        currentLanguage={currentLanguage}
-        onPaymentSuccess={handlePaymentSuccess}
-      />
+        <MobileMoneyModal
+          isOpen={isMobileMoneyOpen}
+          onClose={() => setIsMobileMoneyOpen(false)}
+          property={selectedPropForPayment}
+          bccRate={bccRate}
+          primaryCurrency={primaryCurrency}
+          currentLanguage={currentLanguage}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      </Suspense>
     </div>
   );
 }
